@@ -170,20 +170,38 @@ module MWS
         run
       end
 
-      # Returns unique package labels for faster and more accurate shipment processing at the Amazon fulfillment centre
+      # Returns PDF document data for printing unique package labels for faster and more accurate
+      # shipment processing at the Amazon fulfillment center
       #
       # @see http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_GetUniquePackageLabels.html
-      # @raise [NotImplementedError]
-      def get_unique_package_labels
-        raise NotImplementedError
+      # @param [String] shipment_id
+      # @param [String] page_type
+      # @param [Array<String>] package_labels_to_print
+      # @return [Peddler::XMLParser]
+      def get_unique_package_labels(shipment_id, page_type, package_labels_to_print)
+        operation('GetUniquePackageLabels')
+          .add('ShipmentId' => shipment_id,
+               'PageType' => page_type,
+               'PackageLabelsToPrint' => package_labels_to_print
+          )
+          .structure!('PackageLabelsToPrint', 'member')
+
+        run
       end
 
-      # Returns pallet labels
+      # Returns PDF document data for printing pallet labels for an inbound shipment
       #
-      # @see http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_GetPalletLabels.html
-      # @raise [NotImplementedError]
-      def get_pallet_labels
-        raise NotImplementedError
+      # @see http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_GetPackageLabels.html
+      # @param [String] shipment_id
+      # @param [String] page_type
+      # @param [String] number_of_pallets
+      # @return [Peddler::XMLParser]
+      def get_pallet_labels(shipment_id, page_type, opts = {})
+        operation('GetPalletLabels')
+          .add('ShipmentId' => shipment_id,
+               'PageType' => page_type,
+               'NumberOfPallets' => number_of_pallets)
+        run
       end
 
       # Returns PDF document data for printing a bill of lading for an inbound
